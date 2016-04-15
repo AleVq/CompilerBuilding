@@ -31,3 +31,11 @@
 
 # "temporary" build files
 /target
+
+#C output
+*.out
+
+#Haskell executable
+*.o
+*.hi
+
