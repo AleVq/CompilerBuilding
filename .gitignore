@@ -35,7 +35,9 @@
 #C output
 *.out
 
-#Haskell executable
+#Haskell
 *.o
 *.hi
-
+TestC.hs
+ParC.hs
+LexC.hs
