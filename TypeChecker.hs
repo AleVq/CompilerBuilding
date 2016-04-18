@@ -2,7 +2,7 @@
 
 module TypeChecker where
 
-import AbsImpy 
+import AbsC 
 import ErrM
 
 type Fun = (Ident, (Type, [(Type, Modality)]))
@@ -76,7 +76,7 @@ checkDecls env [] = Ok env
 checkDecls env (decl:decls) =
 	case decl of
 		Dvar typ (vdecl:vdecls) -> 
-			case checkExp env (\(VarDecl id exp) -> id exp) of -- TODO
+			case checkRExp env (\(VarDecl id exp) -> exp) of 
 				Ok _ ->
 					do 
 						env_ <- addVar env (\(VarDecl id exp) -> id) typ
@@ -98,7 +98,7 @@ checkStmtsDels env (st_de:sts_des) typ =
 
 checkStmtDel :: Env -> Stmt_Decl -> Type -> Err Env
 checkStmtDel env st_de typ =
-	case st_de of
+	case (\(_ st_de) -> st_de) of
 		Dvar _ _ -> checkDecls env st_de 
 		Dfun _ _ _ _ -> checkDecls env st_de
 		RetExpVoid -> case typ of
@@ -245,16 +245,16 @@ checkRExpr env rexpr =
 				_ -> Bad ("Bad typing\n")
 		Ref lexpr -> 
 			case checkLexpr env lexpr of
-				Ok Pointer typ -> Ok typ
+				Ok Pointer typ -> Ok (Pointer typ)
 				_ -> Bad ("Bad typing\n")
 		Const _ typ -> Ok typ
-		FCall id param ->
+		RFCall id param ->
 			case lookupFun env id param of
 				Ok typ -> Ok typ
 				_ -> Bad ("Bad typing\n")
 		Lexpr lexpr -> checkLExpr env lexpr
 
-lookupFun :: Env -> Ident -> [RExpr] -> Err Env
+lookupFun :: Env -> Ident -> [RExpr] -> Err Type
 lookupFun [] id param = Bad ("Function isn't declared\n")
 lookupFun (scope:scopes) id param = 
 	case lookup id (fst scope) of
@@ -268,7 +268,7 @@ lookupFun (scope:scopes) id param =
 							typ = fst . snd $ sig
 
 checkParam :: [Type] -> [RExpr] -> Err ()
-checkParam  ptyp param = checkP (map (\(typ,_) -> typ) ptyp ) param
+checkParam ptyp param = checkP (map (\(typ,_) -> typ) ptyp ) param
 	where 
 		checkP [] (param:_) = Bad ("Error Parameter\n") 
 		checkP (ptyp:_) [] = Bad ("Error Parameter\n") 
@@ -279,10 +279,26 @@ checkParam  ptyp param = checkP (map (\(typ,_) -> typ) ptyp ) param
 			else 
 				Bad ("Error Parameter\n") 
 
+checkLExpr :: Env -> LExpr -> Err Type
+checkLexpr env lexpr = 
+	case lexpr of
+		Deref rexpr -> checkRExpr env rexpr
+		Id id -> lookupVar env id
+		ArrayEl lexpr rexpr ->
+			case checkRExpr env rexpr of
+				Ok T_Int -> 
+					case checkLExpr env lexpr of
+						Ok ArrDef typ len -> Ok (ArrDef typ len)
+						_ -> Bad ("Bad typing\n")
+				_ -> Bad ("Bad Typing\n")
+		LFCall id param ->
+			case lookupFun env id param of
+				Ok typ -> Ok typ
+				_ -> Bad ("Bad typing\n")
 
-
-
-
-
-
-
+lookupVar :: Env -> Ident -> Err Type
+lookupVar [] id = Bad ("Variable not declared\n")
+lookupVar (scope:scopes) id = 
+	case lookup id (snd scope) of
+		Nothing -> lookupVar scopes id
+		Just var -> Ok (fst var)

@@ -41,6 +41,9 @@
 *.cf
 *.bak
 *.txt
+Test*
+Skel*
+AbsC.hs
 TestC.hs
-ParC.hs
-LexC.hs
+ParCLike.hs
+LexCLike.hs

@@ -1,13 +1,11 @@
 all:
-	happy -gca ParC.y
-	alex -g LexC.x
-	ghc --make TestC.hs -o TestC
+	happy -gca ParCLike.y
+	alex -g LexCLike.x
+	ghc --make TestCLike.hs -o TestCLike
 
 clean:
 	-rm -f *.log *.aux *.hi *.o *.dvi
 
 distclean: clean
-	-rm -f  LexC.* ParC.* TestImpy.* AbsC.* TestC ErrM.*
-	
-testDefaultPrint:
+	-rm -f DocCLike.* LexCLike.* ParCLike.* LayoutCLike.* SkelCLike.* PrintCLike.* TestCLike.* AbsCLike.* TestCLike ErrM.* SharedString.* ComposOp.* C_like22.dtd XMLCLike.* Makefile*
 	
