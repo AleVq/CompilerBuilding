@@ -38,6 +38,9 @@
 #Haskell
 *.o
 *.hi
+*.cf
+*.bak
+*.txt
 TestC.hs
 ParC.hs
 LexC.hs
