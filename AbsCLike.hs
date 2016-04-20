@@ -26,7 +26,7 @@ data Program = Prog [Decl]
 data Decl
     = Dvar Type [VarDeclInit]
     {- dichiarata, ma non inizializzata -}
-    | Undvar Type [Ident]
+    | UndVar Type [Ident]
     | Dfun Type Ident [Parameter] [StmtDecl]
     {- le funzioni possono ritornare anche tipi complessi-}
   deriving (Eq, Ord, Show)
@@ -49,11 +49,11 @@ data RExpr
     = InfixOp InfixOp RExpr RExpr
     | UnaryOp UnaryOp RExpr
     | Ref LExpr
-    | FCall FunCall
+    | FCall Ident [RExpr]
     | Lexpr LExpr
     | Int Integer
     | Char Char
-    | Float Double
+    | Double Double
     | Bool Boolean
   deriving (Eq, Ord, Show )
 
@@ -124,7 +124,7 @@ data JumpStmt = Break | Continue | RetExpVoid | RetExp RExpr
   deriving (Eq, Ord, Show )
 
 data SelectionStmt
-    = IfNoElse RExpr [StmtDecl] | IfElse RExpr [StmtDecl] StmtDecl
+    = IfNoElse RExpr [StmtDecl] | IfElse RExpr [StmtDecl] [StmtDecl]
   deriving (Eq, Ord, Show )
 
 data IterStmt

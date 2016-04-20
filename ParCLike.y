@@ -119,12 +119,12 @@ RExpr :: { RExpr }
       | RExpr '^'  RExpr { InfixOp (ArithOp Pow) $1 $3 }
       | '!' RExpr        { UnaryOp Not $2 }
       | '-' RExpr %prec NEG { UnaryOp Neg $2 }
-      | LExpr            { LExpr $1 }
+      | LExpr            { Lexpr $1 }
       | Ident '(' ListRExpr ')' { FCall $1 $3 }
-      | Integer          { Int $ Int $1 }
-      | Char             { Char $ Char $1 }
-      | Double           { Float $ Double $1}
-      | Boolean          { Bool $ Bool }
+      | Integer          { Int $1 }
+      | Char             { Char $1 }
+      | Double           { Double  $1}
+      | Boolean          { Bool $1 }
 
 FunCall :: { FunCall }
 FunCall : Ident '(' ListRExpr ')' { Call $1 $3 }
@@ -159,11 +159,11 @@ ListDecl :: { [Decl] }
 ListDecl : {- empty -} { [] } | ListDecl Decl { flip (:) $1 $2 }
 
 Decl :: { Decl }
-Decl : Type ListVarDeclInit ';' { Dvar $1 $2 }
+Decl : Type ListVarDeclInit ';' {Dvar $1 $2 }
      | Type ListIdent ';' { UndVar $1 $2 }
      | Type Ident '(' ListParameter ')' ListStmtDecl { Dfun $1 $2 $4 $6 }
 
-ListVarDeclInit :: { [Dvar] }
+ListVarDeclInit :: { [VarDeclInit] }
 ListVarDeclInit : VarDeclInit { (:[]) $1 }
                 | VarDeclInit ',' ListVarDeclInit { (:) $1 $3 }
 
@@ -209,7 +209,7 @@ Modality : {- empty -} { M_Void }
          | 'ref' {  M_Ref }
          | 'const' {  M_Const }
          | 'res' {  M_Res }
-         | 'valres' {  Mo_Valres }
+         | 'valres' {  M_Valres }
          | 'name' {  M_Name }
 
 StmtDecl :: { StmtDecl }
@@ -244,7 +244,7 @@ JumpStmt : 'break' {  Break }
          | 'return' '(' RExpr ')' {  RetExp $3 }
 
 SelectionStmt :: { SelectionStmt }
-SelectionStmt : 'if' '(' RExpr ')' ListStmtDecl %prec NO_ELSE {  IfNoElse $3 $5 }
+SelectionStmt : 'if' '(' RExpr ')' ListStmtDecl {  IfNoElse $3 $5 }
               | 'if' '(' RExpr ')' ListStmtDecl 'else' ListStmtDecl {  IfElse $3 $5 $7 }
 
 IterStmt :: { IterStmt }

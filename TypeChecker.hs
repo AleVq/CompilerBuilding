@@ -2,7 +2,7 @@
 
 module TypeChecker where
 
-import AbsC 
+import AbsCLike
 import ErrM
 
 type Fun = (Ident, (Type, [(Type, Modality)]))

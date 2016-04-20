@@ -1,5 +1,5 @@
 all:
-	happy -gca ParCLike.y
+	happy -gcai ParCLike.y
 	alex -g LexCLike.x
 	ghc --make TestCLike.hs -o TestCLike
 
