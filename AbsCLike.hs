@@ -13,7 +13,7 @@ data Type
     | T_Char
     | T_Void 
     | Boolean 
-    | ArrDef Type Integer
+    | ArrDef Type Int
     | Pointer Type
   deriving (Eq, Ord, Show)
 
